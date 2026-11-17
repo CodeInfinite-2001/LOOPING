@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recording...</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 42px;
+      margin: 2px;
+      padding: 0 12px;
+      background: rgba(15, 23, 42, 0.94);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 9999px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      color: #f8fafc;
+      -webkit-app-region: drag;
+    }
+    .left-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rec-dot {
+      width: 10px;
+      height: 10px;
+      background: #ef4444;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #ef4444;
+      animation: blink 1s infinite alternate;
+    }
+    .rec-dot.paused {
+      background: #f59e0b;
+      box-shadow: 0 0 8px #f59e0b;
+      animation: none;
+    }
+    @keyframes blink {
+      from { opacity: 1; }
+      to { opacity: 0.2; }
+    }
+    .timer {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      font-variant-numeric: tabular-nums;
+      color: #f1f5f9;
+    }
+    .btn-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      -webkit-app-region: no-drag;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #f8fafc;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+    .btn-stop {
+      background: #ef4444;
+    }
+    .btn-stop:hover {
+      background: #dc2626;
+    }
+    .btn svg {
+      width: 13px;
+      height: 13px;
+      fill: currentColor;
+    }
+  </style>
+</head>
+<body>
+  <div class="pill">
+    <div class="left-section">
+      <div class="rec-dot" id="dot"></div>
+      <div class="timer" id="timer">00:00:00</div>
+    </div>
+    <div class="btn-group">
+      <!-- Pause / Resume -->
+      <button class="btn" id="btn-pause" title="Pause / Resume (F10)">
+        <svg id="icon-pause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        <svg id="icon-resume" viewBox="0 0 24 24" style="display:none;"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <!-- Stop -->
+      <button class="btn btn-stop" id="btn-stop" title="Stop Recording (F9)">
+        <svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+      </button>
+      <!-- Expand to full window -->
+      <button class="btn" id="btn-expand" title="Open Main Window">
+        <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const timerEl = document.getElementById('timer');
+    const dotEl = document.getElementById('dot');
+    const btnPause = document.getElementById('btn-pause');
+    const iconPause = document.getElementById('icon-pause');
+    const iconResume = document.getElementById('icon-resume');
+    const btnStop = document.getElementById('btn-stop');
+    const btnExpand = document.getElementById('btn-expand');
+
+    let isPaused = false;
+
+    if (window.electronAPI && window.electronAPI.on) {
+      window.electronAPI.on('update-timer', (timeStr) => {
+        timerEl.textContent = timeStr;
+      });
+
+      window.electronAPI.on('update-pause-state', (paused) => {
+        isPaused = paused;
+        if (isPaused) {
+          dotEl.classList.add('paused');
+          iconPause.style.display = 'none';
+          iconResume.style.display = 'block';
+        } else {
+          dotEl.classList.remove('paused');
+          iconPause.style.display = 'block';
+          iconResume.style.display = 'none';
+        }
+      });
+    }
+
+    btnPause.addEventListener('click', () => {
+      if (window.electronAPI && window.electronAPI.send) {
+        window.electronAPI.send('action-toggle-pause');
+      }
+    });
+
+    btnStop.addEventListener('click', () => {
+      if (window.electronAPI && window.electronAPI.send) {
+        window.electronAPI.send('action-stop-recording');
+      }
+    });
+
+    btnExpand.addEventListener('click', () => {
+      if (window.electronAPI && window.electronAPI.send) {
+        window.electronAPI.send('action-restore-main');
+      }
+    });
+  </script>
+</body>
+</html>

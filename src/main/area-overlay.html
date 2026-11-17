@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Select Recording Area</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body, html {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.45);
+      cursor: crosshair;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    #tip-banner {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #f8fafc;
+      padding: 10px 24px;
+      border-radius: 9999px;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      z-index: 10000;
+      pointer-events: none;
+    }
+
+    .key-badge {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: monospace;
+    }
+
+    /* Cutout canvas that cuts a hole in the dark overlay */
+    #mask-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    /* The interactive selection box */
+    #selection-box {
+      position: absolute;
+      display: none;
+      border: 2px solid #6366f1;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6), 0 0 20px rgba(99, 102, 241, 0.4);
+      cursor: move;
+      z-index: 1000;
+      pointer-events: auto;
+    }
+
+    /* Resize handles */
+    .handle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #ffffff;
+      border: 2px solid #4f46e5;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .handle.nw { top: -6px; left: -6px; cursor: nwse-resize; }
+    .handle.n  { top: -6px; left: calc(50% - 5px); cursor: ns-resize; }
+    .handle.ne { top: -6px; right: -6px; cursor: nesw-resize; }
+    .handle.e  { top: calc(50% - 5px); right: -6px; cursor: ew-resize; }
+    .handle.se { bottom: -6px; right: -6px; cursor: nwse-resize; }
+    .handle.s  { bottom: -6px; left: calc(50% - 5px); cursor: ns-resize; }
+    .handle.sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
+    .handle.w  { top: calc(50% - 5px); left: -6px; cursor: ew-resize; }
+
+    /* Floating action toolbar below selection box */
+    #toolbar {
+      position: absolute;
+      bottom: -54px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 10px;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+      white-space: nowrap;
+      pointer-events: auto;
+    }
+
+    #dim-badge {
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-confirm {
+      background: #4f46e5;
+      color: #ffffff;
+    }
+    .btn-confirm:hover {
+      background: #4338ca;
+    }
+
+    .btn-preset {
+      background: rgba(255, 255, 255, 0.1);
+      color: #e2e8f0;
+    }
+    .btn-preset:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-cancel {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+    }
+    .btn-cancel:hover {
+      background: rgba(239, 68, 68, 0.35);
+    }
+  </style>
+</head>
+<body>
+  <div id="tip-banner">
+    <span>Click & Drag to select recording area</span>
+    <span><span class="key-badge">Enter</span> Confirm</span>
+    <span><span class="key-badge">Esc</span> Cancel</span>
+  </div>
+
+  <canvas id="mask-canvas"></canvas>
+
+  <div id="selection-box">
+    <div class="handle nw" data-handle="nw"></div>
+    <div class="handle n"  data-handle="n"></div>
+    <div class="handle ne" data-handle="ne"></div>
+    <div class="handle e"  data-handle="e"></div>
+    <div class="handle se" data-handle="se"></div>
+    <div class="handle s"  data-handle="s"></div>
+    <div class="handle sw" data-handle="sw"></div>
+    <div class="handle w"  data-handle="w"></div>
+
+    <div id="toolbar">
+      <span id="dim-badge">0 × 0</span>
+      <button class="btn btn-preset" id="preset-720">720p</button>
+      <button class="btn btn-preset" id="preset-1080">1080p</button>
+      <button class="btn btn-confirm" id="btn-confirm">✓ Confirm Region</button>
+      <button class="btn btn-cancel" id="btn-cancel">✕ Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('mask-canvas');
+    const ctx = canvas.getContext('2d');
+    const box = document.getElementById('selection-box');
+    const toolbar = document.getElementById('toolbar');
+    const dimBadge = document.getElementById('dim-badge');
+    const tipBanner = document.getElementById('tip-banner');
+
+    let isDrawing = false;
+    let isMoving = false;
+    let activeHandle = null;
+
+    let startX = 0, startY = 0;
+    let moveOffsetX = 0, moveOffsetY = 0;
+    let rect = { x: 0, y: 0, w: 0, h: 0 };
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      drawMask();
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function drawMask() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (rect.w > 0 && rect.h > 0) {
+        ctx.clearRect(rect.x, rect.y, rect.w, rect.h);
+      }
+    }
+
+    function updateBoxUI() {
+      if (rect.w < 10 || rect.h < 10) {
+        box.style.display = 'none';
+        return;
+      }
+      box.style.display = 'block';
+      box.style.left = `${rect.x}px`;
+      box.style.top = `${rect.y}px`;
+      box.style.width = `${rect.w}px`;
+      box.style.height = `${rect.h}px`;
+
+      dimBadge.textContent = `${Math.round(rect.w)} × ${Math.round(rect.h)}`;
+
+      // Position toolbar: if too close to bottom edge, flip above
+      if (rect.y + rect.h + 60 > window.innerHeight) {
+        toolbar.style.bottom = 'auto';
+        toolbar.style.top = '-54px';
+      } else {
+        toolbar.style.top = 'auto';
+        toolbar.style.bottom = '-54px';
+      }
+
+      drawMask();
+    }
+
+    window.addEventListener('mousedown', (e) => {
+      if (e.target.closest('#toolbar')) return;
+
+      if (e.target.classList.contains('handle')) {
+        activeHandle = e.target.dataset.handle;
+        startX = e.clientX;
+        startY = e.clientY;
+        return;
+      }
+
+      if (e.target === box) {
+        isMoving = true;
+        moveOffsetX = e.clientX - rect.x;
+        moveOffsetY = e.clientY - rect.y;
+        return;
+      }
+
+      // Drawing new box
+      isDrawing = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      rect = { x: startX, y: startY, w: 0, h: 0 };
+      updateBoxUI();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (isDrawing) {
+        const curX = e.clientX;
+        const curY = e.clientY;
+        rect.x = Math.min(startX, curX);
+        rect.y = Math.min(startY, curY);
+        rect.w = Math.abs(curX - startX);
+        rect.h = Math.abs(curY - startY);
+        updateBoxUI();
+      } else if (isMoving) {
+        rect.x = Math.max(0, Math.min(window.innerWidth - rect.w, e.clientX - moveOffsetX));
+        rect.y = Math.max(0, Math.min(window.innerHeight - rect.h, e.clientY - moveOffsetY));
+        updateBoxUI();
+      } else if (activeHandle) {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        if (activeHandle.includes('e')) {
+          rect.w = Math.max(50, rect.w + dx);
+          startX = e.clientX;
+        }
+        if (activeHandle.includes('s')) {
+          rect.h = Math.max(50, rect.h + dy);
+          startY = e.clientY;
+        }
+        if (activeHandle.includes('w')) {
+          const newW = rect.w - dx;
+          if (newW >= 50) {
+            rect.x += dx;
+            rect.w = newW;
+            startX = e.clientX;
+          }
+        }
+        if (activeHandle.includes('n')) {
+          const newH = rect.h - dy;
+          if (newH >= 50) {
+            rect.y += dy;
+            rect.h = newH;
+            startY = e.clientY;
+          }
+        }
+        updateBoxUI();
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDrawing = false;
+      isMoving = false;
+      activeHandle = null;
+    });
+
+    // Presets
+    document.getElementById('preset-720').addEventListener('click', (e) => {
+      e.stopPropagation();
+      rect.w = 1280;
+      rect.h = 720;
+      rect.x = Math.max(0, Math.round((window.innerWidth - rect.w) / 2));
+      rect.y = Math.max(0, Math.round((window.innerHeight - rect.h) / 2));
+      updateBoxUI();
+    });
+
+    document.getElementById('preset-1080').addEventListener('click', (e) => {
+      e.stopPropagation();
+      rect.w = 1920;
+      rect.h = 1080;
+      rect.x = Math.max(0, Math.round((window.innerWidth - rect.w) / 2));
+      rect.y = Math.max(0, Math.round((window.innerHeight - rect.h) / 2));
+      updateBoxUI();
+    });
+
+    function confirmRegion() {
+      if (rect.w < 20 || rect.h < 20) {
+        alert('Please draw a selection area first.');
+        return;
+      }
+      if (window.electronAPI && window.electronAPI.send) {
+        window.electronAPI.send('area-selected', {
+          x: Math.round(rect.x),
+          y: Math.round(rect.y),
+          width: Math.round(rect.w),
+          height: Math.round(rect.h),
+          viewportWidth: window.innerWidth,
+          viewportHeight: window.innerHeight
+        });
+      }
+    }
+
+    function cancelSelection() {
+      if (window.electronAPI && window.electronAPI.send) {
+        window.electronAPI.send('area-selection-cancelled');
+      }
+    }
+
+    document.getElementById('btn-confirm').addEventListener('click', confirmRegion);
+    document.getElementById('btn-cancel').addEventListener('click', cancelSelection);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        confirmRegion();
+      } else if (e.key === 'Escape') {
+        cancelSelection();
+      }
+    });
+  </script>
+</body>
+</html>

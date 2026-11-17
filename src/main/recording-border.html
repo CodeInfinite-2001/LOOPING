@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recording Border</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body, html {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: transparent;
+      pointer-events: none;
+    }
+    #border-box {
+      position: absolute;
+      border: 3px dashed #ef4444;
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);
+      animation: pulseBorder 2s infinite ease-in-out;
+    }
+    #rec-badge {
+      position: absolute;
+      top: -24px;
+      left: 0;
+      background: #ef4444;
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+      font-family: sans-serif;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+    @keyframes pulseBorder {
+      0%, 100% { opacity: 0.85; }
+      50% { opacity: 0.45; }
+    }
+  </style>
+</head>
+<body>
+  <div id="border-box">
+    <div id="rec-badge">REC AREA</div>
+  </div>
+
+  <script>
+    if (window.electronAPI && window.electronAPI.on) {
+      window.electronAPI.on('update-border', ({ x, y, width, height }) => {
+        const box = document.getElementById('border-box');
+        if (box) {
+          box.style.left = x + 'px';
+          box.style.top = y + 'px';
+          box.style.width = width + 'px';
+          box.style.height = height + 'px';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

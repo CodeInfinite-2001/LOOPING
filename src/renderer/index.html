@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOOPING - Screen Recorder & Video Splitter</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-title">LOOPING</h1>
+          <span class="brand-subtitle" id="i18n-sub">Screen Recorder & Video Splitter</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs">
+        <button class="nav-btn active" data-tab="tab-record">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3" fill="#ef4444"/></svg>
+          <span id="i18n-tab-rec">Record</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-split">
+          <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+          <span id="i18n-tab-split">Split Video</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-settings">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span id="i18n-tab-settings">Settings</span>
+        </button>
+      </nav>
+
+      <!-- Language Toggle -->
+      <div class="lang-switch">
+        <button id="lang-en" class="lang-btn active">EN</button>
+        <button id="lang-si" class="lang-btn">සිංහල</button>
+      </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="app-body">
+      <!-- ============================================== -->
+      <!-- TAB 1: RECORD SCREEN -->
+      <!-- ============================================== -->
+      <section id="tab-record" class="tab-pane active">
+        <div class="record-layout">
+          <!-- Step 1: Recording Mode -->
+          <div class="card glass-card">
+            <div class="card-header">
+              <span class="step-num">1</span>
+              <div>
+                <h3 class="card-title" id="i18n-mode-title">Select Recording Mode</h3>
+                <p class="card-desc" id="i18n-mode-desc">Choose between Full Screen or a Selected Area</p>
+              </div>
+            </div>
+
+            <div class="mode-grid">
+              <!-- Full Screen Mode -->
+              <div class="mode-card active" data-mode="fullscreen">
+                <div class="mode-icon">
+                  <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <div class="mode-info">
+                  <h4 class="mode-name" id="i18n-mode-fs">Full Screen</h4>
+                  <p class="mode-sub" id="i18n-mode-fs-sub">Record entire display</p>
+                </div>
+                <div class="check-mark">✓</div>
+              </div>
+
+              <!-- Custom Area Mode -->
+              <div class="mode-card" data-mode="area">
+                <div class="mode-icon">
+                  <svg viewBox="0 0 24 24"><path d="M5 3H3v2h2V3zm16 0h-2v2h2V3zm-2 18h2v-2h-2v2zm-14 0H3v-2h2v2zm0-6H3v-4h2v4zm16 0h-2v-4h2v4zm-6 6h-4v-2h4v2zm0-18h-4v2h4V3z"/></svg>
+                </div>
+                <div class="mode-info">
+                  <h4 class="mode-name" id="i18n-mode-area">Select Area</h4>
+                  <p class="mode-sub" id="i18n-mode-area-sub">Record specific screen region</p>
+                </div>
+                <div class="check-mark">✓</div>
+              </div>
+            </div>
+
+            <!-- Fullscreen Monitor Selector -->
+            <div id="fs-source-container" class="source-subpanel">
+              <label class="control-label" id="i18n-lbl-display">Display Source:</label>
+              <select id="screen-source-select" class="styled-select"></select>
+            </div>
+
+            <!-- Area Selector Subpanel -->
+            <div id="area-source-container" class="source-subpanel" style="display: none;">
+              <div class="area-action-row">
+                <button id="btn-select-area" class="btn btn-secondary">
+                  <svg viewBox="0 0 24 24"><path d="M3 3h6v2H5v4H3V3zm18 0h-6v2h4v4h2V3zM3 21h6v-2H5v-4H3v6zm18 0h-6v-2h4v-4h2v6z"/></svg>
+                  <span id="i18n-btn-pick-area">Select Region on Screen</span>
+                </button>
+                <div id="area-badge" class="badge badge-info">No area selected (Defaults to 1280×720)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Audio Source -->
+          <div class="card glass-card">
+            <div class="card-header">
+              <span class="step-num">2</span>
+              <div>
+                <h3 class="card-title" id="i18n-audio-title">Audio Settings</h3>
+                <p class="card-desc" id="i18n-audio-desc">Choose sound source or record silently</p>
+              </div>
+            </div>
+
+            <div class="audio-options-grid">
+              <!-- No Audio -->
+              <label class="audio-radio-card">
+                <input type="radio" name="audio-mode" value="none">
+                <div class="radio-content">
+                  <div class="audio-icon">🔇</div>
+                  <div class="radio-text">
+                    <span class="radio-title" id="i18n-aud-none">No Sound</span>
+                    <span class="radio-desc" id="i18n-aud-none-sub">Video only</span>
+                  </div>
+                </div>
+              </label>
+
+              <!-- Mic Only -->
+              <label class="audio-radio-card">
+                <input type="radio" name="audio-mode" value="mic" checked>
+                <div class="radio-content">
+                  <div class="audio-icon">🎤</div>
+                  <div class="radio-text">
+                    <span class="radio-title" id="i18n-aud-mic">Microphone</span>
+                    <span class="radio-desc" id="i18n-aud-mic-sub">Record your voice</span>
+                  </div>
+                </div>
+              </label>
+
+              <!-- System Audio -->
+              <label class="audio-radio-card">
+                <input type="radio" name="audio-mode" value="system">
+                <div class="radio-content">
+                  <div class="audio-icon">🔊</div>
+                  <div class="radio-text">
+                    <span class="radio-title" id="i18n-aud-sys">System Audio</span>
+                    <span class="radio-desc" id="i18n-aud-sys-sub">Computer / video sound</span>
+                  </div>
+                </div>
+              </label>
+
+              <!-- Both -->
+              <label class="audio-radio-card">
+                <input type="radio" name="audio-mode" value="both">
+                <div class="radio-content">
+                  <div class="audio-icon">🎙️+🔊</div>
+                  <div class="radio-text">
+                    <span class="radio-title" id="i18n-aud-both">Mic + System</span>
+                    <span class="radio-desc" id="i18n-aud-both-sub">Mix voice & PC audio</span>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <!-- Mic Device selector & VU Meter -->
+            <div id="mic-settings-row" class="mic-settings-row">
+              <div class="mic-select-wrap">
+                <label class="control-label" id="i18n-lbl-mic-dev">Microphone Device:</label>
+                <select id="mic-select" class="styled-select"></select>
+              </div>
+              <div class="vu-meter-wrap">
+                <span class="vu-label">Level:</span>
+                <div class="vu-bar-bg">
+                  <div id="vu-bar" class="vu-bar-fill"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Video Quality & Preferences -->
+          <div class="card glass-card">
+            <div class="card-header">
+              <span class="step-num">3</span>
+              <div>
+                <h3 class="card-title" id="i18n-pref-title">Recording Preferences</h3>
+                <p class="card-desc" id="i18n-pref-desc">FPS, quality, and window behavior</p>
+              </div>
+            </div>
+
+            <div class="pref-grid">
+              <div class="pref-item">
+                <label class="control-label" id="i18n-lbl-fps">Frame Rate (FPS):</label>
+                <select id="fps-select" class="styled-select">
+                  <option value="30" selected>30 FPS (Smooth / Standard)</option>
+                  <option value="60">60 FPS (Ultra Smooth / Gaming)</option>
+                </select>
+              </div>
+
+              <div class="pref-item">
+                <label class="control-label" id="i18n-lbl-quality">Video Quality:</label>
+                <select id="quality-select" class="styled-select">
+                  <option value="high" selected>High (Crisp & Clear)</option>
+                  <option value="medium">Medium (Balanced)</option>
+                  <option value="standard">Standard (Compact File Size)</option>
+                </select>
+              </div>
+
+              <div class="pref-item checkbox-item">
+                <label class="checkbox-container">
+                  <input type="checkbox" id="chk-minimize" checked>
+                  <span class="checkmark"></span>
+                  <span id="i18n-chk-min">Minimize to Mini Floating Bar during recording</span>
+                </label>
+              </div>
+
+              <div class="pref-item checkbox-item">
+                <label class="checkbox-container">
+                  <input type="checkbox" id="chk-countdown" checked>
+                  <span class="checkmark"></span>
+                  <span id="i18n-chk-count">Show 3-second countdown before recording</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recording Action Button Bar -->
+          <div class="start-action-panel">
+            <button id="btn-start-record" class="btn btn-record-primary">
+              <div class="btn-rec-circle"></div>
+              <span id="i18n-btn-start">START RECORDING</span>
+              <span class="btn-shortcut">F9</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Active Recording Floating / Embedded Card -->
+        <div id="active-rec-banner" class="active-rec-banner" style="display: none;">
+          <div class="rec-banner-info">
+            <div class="pulsing-rec-dot"></div>
+            <div>
+              <div class="rec-banner-title" id="rec-status-title">RECORDING IN PROGRESS</div>
+              <div class="rec-banner-timer" id="rec-timer">00:00:00</div>
+            </div>
+          </div>
+          <div class="rec-banner-controls">
+            <button id="btn-banner-pause" class="btn btn-secondary">
+              <span id="banner-pause-text">⏸ Pause (F10)</span>
+            </button>
+            <button id="btn-banner-stop" class="btn btn-danger">
+              <span>⏹ Stop Recording (F9)</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 2: VIDEO SPLITTER / TRIMMER -->
+      <!-- ============================================== -->
+      <section id="tab-split" class="tab-pane">
+        <div class="split-layout">
+          <!-- Video File Bar -->
+          <div class="card glass-card file-bar-card">
+            <div class="file-bar-left">
+              <button id="btn-load-video" class="btn btn-secondary">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                <span id="i18n-btn-load-vid">Open Video File</span>
+              </button>
+              <div id="video-file-info" class="file-name-text">No video loaded. Select a video or record one!</div>
+            </div>
+            <div id="video-meta-badge" class="badge badge-info" style="display: none;">00:00:00</div>
+          </div>
+
+          <!-- Video Player & Interactive Timeline -->
+          <div class="card glass-card player-card">
+            <div class="player-wrapper">
+              <video id="splitter-player" preload="metadata"></video>
+              <div id="player-placeholder" class="player-placeholder">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+                <p id="i18n-player-empty">Load or record a video to start trimming & splitting</p>
+              </div>
+            </div>
+
+            <!-- Player Controls -->
+            <div class="player-controls">
+              <div class="timeline-container" id="timeline-container">
+                <div class="timeline-track" id="timeline-track">
+                  <div class="timeline-range-highlight" id="timeline-range"></div>
+                  <div class="timeline-progress" id="timeline-progress"></div>
+                  <!-- Split marker pins rendered here -->
+                  <div id="timeline-markers-layer"></div>
+                  <div class="timeline-scrubber" id="timeline-scrubber"></div>
+                </div>
+              </div>
+
+              <div class="player-buttons-row">
+                <div class="player-btns-left">
+                  <button id="btn-play-pause" class="btn btn-circle" title="Play/Pause (Space)">
+                    <svg id="icon-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <svg id="icon-pause-player" viewBox="0 0 24 24" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                  </button>
+                  <button id="btn-step-back" class="btn btn-sm btn-ghost" title="-1 second">◀ -1s</button>
+                  <button id="btn-step-forward" class="btn btn-sm btn-ghost" title="+1 second">+1s ▶</button>
+                  <div class="timecode-display">
+                    <span id="time-current">00:00:00</span>
+                    <span class="time-divider">/</span>
+                    <span id="time-total">00:00:00</span>
+                  </div>
+                </div>
+
+                <div class="player-btns-right">
+                  <select id="playback-speed" class="styled-select select-compact">
+                    <option value="0.5">0.5x</option>
+                    <option value="1" selected>1.0x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2">2.0x</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Splitting Modes Controls -->
+          <div class="card glass-card">
+            <div class="split-tabs-header">
+              <button class="split-tab-btn active" data-mode="markers">
+                <span id="i18n-tab-markers">✂️ Cut Markers (Multi-Split)</span>
+              </button>
+              <button class="split-tab-btn" data-mode="range">
+                <span id="i18n-tab-range">⏱️ Trim Range (Start & End)</span>
+              </button>
+              <button class="split-tab-btn" data-mode="equal">
+                <span id="i18n-tab-equal">📊 Split Equal Parts</span>
+              </button>
+            </div>
+
+            <!-- MODE A: Cut Markers (Multi-Split) -->
+            <div id="split-mode-markers" class="split-subpanel active">
+              <div class="split-action-row">
+                <button id="btn-add-marker" class="btn btn-primary">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  <span id="i18n-btn-add-cut">Add Split Marker at Current Time</span>
+                </button>
+                <button id="btn-clear-markers" class="btn btn-ghost">
+                  <span id="i18n-btn-clear-cuts">Clear All Markers</span>
+                </button>
+              </div>
+
+              <!-- List of generated segments -->
+              <div class="segments-list-container">
+                <h4 class="segments-header" id="i18n-seg-header">Output Clips Preview:</h4>
+                <div id="segments-list" class="segments-list">
+                  <div class="empty-segments-msg" id="i18n-no-cuts-msg">
+                    Play the video, scrub to where you want to cut, and click "Add Split Marker".
+                  </div>
+                </div>
+              </div>
+
+              <div class="split-export-row">
+                <button id="btn-export-all-markers" class="btn btn-success" disabled>
+                  <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span id="i18n-btn-export-all">Export All Split Clips</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- MODE B: Trim Range (Start & End) -->
+            <div id="split-mode-range" class="split-subpanel">
+              <div class="range-inputs-grid">
+                <div class="range-box">
+                  <label class="control-label" id="i18n-lbl-start">Start Time:</label>
+                  <div class="range-time-group">
+                    <input type="text" id="trim-start-input" class="styled-input" value="00:00:00" readonly>
+                    <button id="btn-set-start" class="btn btn-secondary btn-sm" id="i18n-btn-set-start">Set Current [ [ </button>
+                  </div>
+                </div>
+
+                <div class="range-box">
+                  <label class="control-label" id="i18n-lbl-end">End Time:</label>
+                  <div class="range-time-group">
+                    <input type="text" id="trim-end-input" class="styled-input" value="00:00:00" readonly>
+                    <button id="btn-set-end" class="btn btn-secondary btn-sm" id="i18n-btn-set-end">Set Current ] ] </button>
+                  </div>
+                </div>
+
+                <div class="range-box duration-summary">
+                  <label class="control-label" id="i18n-lbl-clip-dur">Clip Duration:</label>
+                  <div id="trim-clip-duration" class="badge badge-success">00:00:00</div>
+                </div>
+              </div>
+
+              <div class="split-export-row">
+                <button id="btn-export-trim" class="btn btn-success" disabled>
+                  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span id="i18n-btn-export-clip">Export Trimmed Clip</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- MODE C: Equal Parts -->
+            <div id="split-mode-equal" class="split-subpanel">
+              <div class="equal-split-row">
+                <label class="control-label" id="i18n-lbl-equal-parts">Split video into:</label>
+                <div class="equal-counter">
+                  <button id="btn-equal-minus" class="btn btn-secondary btn-sm">-</button>
+                  <span id="equal-parts-count" class="counter-display">2</span>
+                  <button id="btn-equal-plus" class="btn btn-secondary btn-sm">+</button>
+                </div>
+                <span class="equal-label" id="i18n-lbl-equal-clips">equal clips</span>
+              </div>
+              <p class="equal-hint" id="equal-parts-hint">Each clip will be approximately 00:00:00</p>
+
+              <div class="split-export-row">
+                <button id="btn-export-equal" class="btn btn-success" disabled>
+                  <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span id="i18n-btn-export-equal">Split and Export Parts</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 3: SETTINGS -->
+      <!-- ============================================== -->
+      <section id="tab-settings" class="tab-pane">
+        <div class="settings-layout">
+          <div class="card glass-card">
+            <h3 class="card-title" id="i18n-set-app">Application Information</h3>
+            <div class="info-list">
+              <div class="info-item">
+                <span class="info-label">Application:</span>
+                <span class="info-value">LOOPING (v1.0.0)</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Mode:</span>
+                <span class="info-value badge badge-success">100% Offline (No Internet Needed)</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Supported Platforms:</span>
+                <span class="info-value">Windows (.exe) & Linux (.AppImage / .deb)</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Video Engine:</span>
+                <span class="info-value">Hardware Accelerated Chromium WebRTC + FFmpeg 6.1</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card glass-card">
+            <h3 class="card-title" id="i18n-set-shortcuts">Keyboard Shortcuts</h3>
+            <div class="shortcuts-table">
+              <div class="shortcut-row">
+                <span class="shortcut-key"><kbd>F9</kbd></span>
+                <span class="shortcut-desc" id="i18n-key-f9">Start / Stop Screen Recording (Global)</span>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-key"><kbd>F10</kbd></span>
+                <span class="shortcut-desc" id="i18n-key-f10">Pause / Resume Recording (Global)</span>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-key"><kbd>Space</kbd></span>
+                <span class="shortcut-desc" id="i18n-key-space">Play / Pause Video in Splitter</span>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-key"><kbd>Enter</kbd></span>
+                <span class="shortcut-desc" id="i18n-key-enter">Confirm Custom Area Selection</span>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-key"><kbd>Esc</kbd></span>
+                <span class="shortcut-desc" id="i18n-key-esc">Cancel Custom Area Selection</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card glass-card">
+            <h3 class="card-title" id="i18n-set-export">Default Export Format</h3>
+            <div class="pref-item">
+              <label class="control-label" id="i18n-lbl-def-format">Format:</label>
+              <select id="default-format-select" class="styled-select">
+                <option value="mp4" selected>MP4 (Universal - H.264 / AAC)</option>
+                <option value="webm">WebM (Fast Direct Output)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Countdown Overlay (3, 2, 1, GO!) -->
+    <div id="countdown-overlay" class="countdown-overlay" style="display: none;">
+      <div id="countdown-number" class="countdown-number">3</div>
+    </div>
+
+    <!-- Post-Recording Dialog Modal -->
+    <div id="post-record-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-box glass-card">
+        <div class="modal-header">
+          <div class="modal-badge-rec">✓ RECORDING FINISHED</div>
+          <button id="btn-close-modal" class="btn-close">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-preview-wrapper">
+            <video id="modal-preview-video" controls autoplay muted></video>
+          </div>
+          <div class="modal-meta-row">
+            <span id="modal-duration-badge" class="badge badge-info">Duration: 00:00:00</span>
+            <span id="modal-size-badge" class="badge badge-info">Size: 0 MB</span>
+          </div>
+          <p class="modal-help-text" id="i18n-modal-prompt">What would you like to do with this recording?</p>
+          <div class="modal-actions-grid">
+            <button id="btn-modal-save" class="btn btn-primary">
+              <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              <span id="i18n-modal-btn-save">Save Recording (MP4)</span>
+            </button>
+            <button id="btn-modal-split" class="btn btn-secondary">
+              <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+              <span id="i18n-modal-btn-split">Open in Video Splitter</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Processing / Exporting Modal -->
+    <div id="processing-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-box glass-card processing-box">
+        <div class="spinner"></div>
+        <h3 id="processing-title" class="processing-title">Exporting Video...</h3>
+        <p id="processing-status" class="processing-status">Losslessly splitting video segments using FFmpeg...</p>
+        <div id="processing-progress-bar" class="progress-bar-bg" style="display:none;">
+          <div id="processing-progress-fill" class="progress-bar-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/recorder.js"></script>
+  <script src="js/splitter.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
